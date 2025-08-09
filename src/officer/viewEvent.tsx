@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import "../css/home.css";
 import "../css/styles.css";
 import { ClubEvent } from "../models/clubevent";
@@ -9,10 +9,12 @@ import QRCode from "qrcode";
 export function ViewEvent() {
   const fireContext = useContext(FirebaseContext);
   const { eventId } = useParams<{ eventId: string }>(); // Extracting event ID from the URL
+  const navigate = useNavigate();
 
   const [event, setEvent] = useState<ClubEvent | null>(null);
   const [eventDateTime, setEventDateTime] = useState<string>("");
   const [noEventExists, setNoEventExists] = useState<boolean | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [QRCodeData, setQRCodeData] = useState<string | null>(null);
 
@@ -74,13 +76,30 @@ export function ViewEvent() {
             <button
               type="button"
               className="danger-button"
-              onClick={() => {
+              disabled={isDeleting}
+              onClick={async () => {
+                console.log('Attempting to delete event: ', eventId);
                 if (eventId) {
-                  fireContext?.db.deleteEvent(eventId);
+                  setIsDeleting(true);
+                  try {
+                    await fireContext?.db.deleteEvent(eventId);
+                    navigate('/');
+                  } catch (error) {
+                    console.error('Error deleting event: ', error);
+                  } finally {
+                    setIsDeleting(false);
+                  }
                 }
               }}
             >
-              Delete
+              {isDeleting ? (
+                <>
+                  <span className="spinner"></span>
+                  Deleting...
+                </>
+              ) : (
+                'Delete'
+              )}
             </button>
             {/* Implement these routes and functionalities */}
             {/* <Link to={`/editEvent/${event.id}`}>Edit</Link> */}

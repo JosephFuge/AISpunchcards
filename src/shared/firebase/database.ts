@@ -136,7 +136,9 @@ class Database {
     const userRef = doc(this.db, "appusers", userId).withConverter(
       appUserConverter
     );
+    console.log(userRef.path);
     const userSnapshot = await getDoc(userRef);
+    console.log('userSnapshot fetched: ', userSnapshot.toJSON());
 
     if (!userSnapshot.exists()) {
       console.error("User document does not exist");

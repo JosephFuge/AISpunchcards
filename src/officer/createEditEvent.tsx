@@ -1,5 +1,6 @@
 // CreateEventForm.tsx
 import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Timestamp } from "firebase/firestore";
 import { ClubEvent } from "../models/clubevent";
 import { FirebaseContext } from "../shared/firebaseProvider";
@@ -19,8 +20,10 @@ export function CreateEvent() {
     eventDuration: "",
     // Add other fields as necessary
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const fireContext = useContext(FirebaseContext);
+  const navigate = useNavigate();
 
   // Update formData each time the user inputs new values into the form
   const handleChange = (
@@ -38,6 +41,8 @@ export function CreateEvent() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsLoading(true);
+    
     // Construct a new ClubEvent. Convert date and time to a Firestore Timestamp if necessary
     const dateTime = Timestamp.fromDate(
       new Date(`${formData.eventDate}T${formData.eventTime}`)
@@ -62,10 +67,12 @@ export function CreateEvent() {
 
     try {
       await fireContext?.db.addEvent(newEvent);
-      // Here you can clear the form or redirect the user
+      navigate('/eventCreated');
     } catch (error) {
       console.error("Error adding event: ", error);
       // Handle the error appropriately
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -191,7 +198,16 @@ export function CreateEvent() {
           onChange={handleChange}
           placeholder="Handshake URL (optional)"
         />
-        <button type="submit">Create Event</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <span className="spinner"></span>
+              Creating...
+            </>
+          ) : (
+            'Create Event'
+          )}
+        </button>
       </form>
     </div>
   );
