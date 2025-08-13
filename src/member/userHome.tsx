@@ -16,6 +16,8 @@ export function UserHome() {
       // Fetch events and set them
       const events = await fireContext?.db.fetchEvents();
 
+      console.log('User id', fireContext?.user?.id);
+
       if (events) {
         // Split events into future and past
         // If the user is not an officer, only show them events that they have attended

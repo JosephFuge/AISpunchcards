@@ -201,8 +201,17 @@
   transition: background-color 0.35s ease-in-out;
 }
 
-.eventActions > button.danger-button {
+button.danger-button {
   background-color: var(--danger-color);
+  color: white;
+  border: none;
+  text-decoration: none;
+  padding: 5px 10px;
+  /* margin: 0 0 0 10px; */
+  font-weight: 500;
+  font-size: 1em;
+  border-radius: 2px;
+  transition: background-color 0.35s ease-in-out;
 }
 
 @media (hover: hover) {
@@ -210,7 +219,7 @@
     background-color: var(--primary-dark);
   }
 
-  .eventActions > button.danger-button:hover {
+  button.danger-button:hover {
     background-color: var(--danger-dark);
   }
 }

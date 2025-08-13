@@ -10,7 +10,8 @@ class ClubEvent {
   title: string = "";
   description: string = "";
   location: string = "";
-  imgUrl: string = "";
+  imgUrl: string = ""; // Keep for backward compatibility
+  photoUrls: string[] = []; // New field for multiple photos
   externalUrl: string = "";
   category: string = "";
   datetime: Timestamp;
@@ -24,6 +25,7 @@ class ClubEvent {
     tempDescription: string,
     tempLocation: string,
     tempImgUrl: string,
+    tempPhotoUrls: string[],
     tempExternalUrl: string,
     tempCategory: string,
     tempDateTime: Timestamp,
@@ -36,6 +38,7 @@ class ClubEvent {
     this.description = tempDescription;
     this.location = tempLocation;
     this.imgUrl = tempImgUrl;
+    this.photoUrls = tempPhotoUrls;
     this.externalUrl = tempExternalUrl;
     this.category = tempCategory;
     this.datetime = tempDateTime;
@@ -53,6 +56,7 @@ const clubEventConverter = {
       description: event.description,
       location: event.location,
       imgUrl: event.imgUrl,
+      photoUrls: event.photoUrls,
       externalUrl: event.externalUrl,
       category: event.category,
       datetime: event.datetime,
@@ -71,7 +75,8 @@ const clubEventConverter = {
       data.title,
       data.description,
       data.location,
-      data.imgUrl,
+      data.imgUrl || "",
+      data.photoUrls || [],
       data.externalUrl,
       data.category,
       data.datetime,

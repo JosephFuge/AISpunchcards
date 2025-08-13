@@ -87,6 +87,19 @@ class Database {
     await deleteDoc(doc(this.db, "events", eventId));
   }
 
+  async updateEventPhotos(eventId: string, photoUrls: string[]): Promise<void> {
+    try {
+      const eventRef = doc(this.db, "events", eventId);
+      await updateDoc(eventRef, {
+        photoUrls: photoUrls,
+        imgUrl: photoUrls.length > 0 ? photoUrls[0] : "" // Set first photo as main image for backward compatibility
+      });
+    } catch (error) {
+      console.error("Error updating event photos: ", error);
+      throw error;
+    }
+  }
+
   async registerAttendance(
     eventId: string,
     userId: string,

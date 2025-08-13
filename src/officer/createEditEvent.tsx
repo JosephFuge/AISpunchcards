@@ -1,5 +1,5 @@
 // CreateEventForm.tsx
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Timestamp } from "firebase/firestore";
 import { ClubEvent } from "../models/clubevent";
@@ -21,9 +21,19 @@ export function CreateEvent() {
     // Add other fields as necessary
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
 
   const fireContext = useContext(FirebaseContext);
   const navigate = useNavigate();
+
+  // Clean up preview URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      previewUrls.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [previewUrls]);
 
   // Update formData each time the user inputs new values into the form
   const handleChange = (
@@ -39,40 +49,81 @@ export function CreateEvent() {
     }));
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      
+      // Clean up previous preview URLs
+      previewUrls.forEach(url => URL.revokeObjectURL(url));
+      
+      // Create new preview URLs
+      const newPreviewUrls = filesArray.map(file => URL.createObjectURL(file));
+      
+      setSelectedFiles(filesArray);
+      setPreviewUrls(newPreviewUrls);
+    }
+  };
+
+  const removeFile = (indexToRemove: number) => {
+    // Revoke the URL for the file being removed
+    if (previewUrls[indexToRemove]) {
+      URL.revokeObjectURL(previewUrls[indexToRemove]);
+    }
+    
+    setSelectedFiles(files => files.filter((_, index) => index !== indexToRemove));
+    setPreviewUrls(urls => urls.filter((_, index) => index !== indexToRemove));
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
     
-    // Construct a new ClubEvent. Convert date and time to a Firestore Timestamp if necessary
-    const dateTime = Timestamp.fromDate(
-      new Date(`${formData.eventDate}T${formData.eventTime}`)
-    );
-    const newEvent = new ClubEvent(
-      null, // Assuming null ID because Firestore generates this
-      formData.title,
-      formData.description,
-      formData.location,
-      "", // imgUrl is empty, replace as necessary
-      formData.handshakeUrl, // handshakeUrl is empty, replace as necessary
-      formData.category, // category is empty, replace as necessary or add field in form
-      dateTime,
-      parseInt(formData.eventDuration),
-      [], // list of user attendees is empty, will be filled as people check in
-      0 // additional attendees is 0, increases as people mark that they brought a plus one
-    );
-
-    console.log(
-      `Category: ${newEvent.category}, Duration: ${newEvent.eventDuration}`
-    );
-
     try {
-      await fireContext?.db.addEvent(newEvent);
+      // Construct a new ClubEvent. Convert date and time to a Firestore Timestamp if necessary
+      const dateTime = Timestamp.fromDate(
+        new Date(`${formData.eventDate}T${formData.eventTime}`)
+      );
+      const newEvent = new ClubEvent(
+        null, // Assuming null ID because Firestore generates this
+        formData.title,
+        formData.description,
+        formData.location,
+        "", // imgUrl will be set after photo upload
+        [], // photoUrls will be set after photo upload
+        formData.handshakeUrl,
+        formData.category,
+        dateTime,
+        parseInt(formData.eventDuration),
+        [], // list of user attendees is empty, will be filled as people check in
+        0 // additional attendees is 0, increases as people mark that they brought a plus one
+      );
+
+      console.log(
+        `Category: ${newEvent.category}, Duration: ${newEvent.eventDuration}`
+      );
+
+      // First, add the event to get the event ID
+      const result = await fireContext?.db.addEvent(newEvent);
+      const eventId = result?.event.id;
+
+      // If there are photos to upload and we have an event ID
+      if (selectedFiles.length > 0 && eventId && fireContext?.fileStorage) {
+        setIsUploadingPhotos(true);
+        
+        // Upload photos to Firebase Storage
+        const photoUrls = await fireContext.fileStorage.uploadMultipleEventPhotos(eventId, selectedFiles);
+        
+        // Update the event document with photo URLs
+        await fireContext.db.updateEventPhotos(eventId, photoUrls);
+      }
+
       navigate('/eventCreated');
     } catch (error) {
       console.error("Error adding event: ", error);
       // Handle the error appropriately
     } finally {
       setIsLoading(false);
+      setIsUploadingPhotos(false);
     }
   };
 
@@ -198,11 +249,50 @@ export function CreateEvent() {
           onChange={handleChange}
           placeholder="Handshake URL (optional)"
         />
-        <button type="submit" disabled={isLoading}>
+        
+        <label htmlFor="eventPhotos">Event Photos (optional)</label>
+        <input
+          type="file"
+          id="eventPhotos"
+          name="eventPhotos"
+          multiple
+          accept="image/*"
+          onChange={handleFileChange}
+          className="file-input"
+        />
+        
+        {selectedFiles.length > 0 && (
+          <div className="selected-files">
+            <p>Selected photos:</p>
+            <div className="image-previews">
+              {selectedFiles.map((file, index) => (
+                <div key={index} className="image-preview-item">
+                  <div className="image-preview-container">
+                    <img 
+                      src={previewUrls[index]} 
+                      alt={`Preview ${index + 1}`}
+                      className="image-preview"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeFile(index)}
+                      className="remove-image-btn"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <span className="file-name">{file.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        <button type="submit" disabled={isLoading || isUploadingPhotos}>
           {isLoading ? (
             <>
               <span className="spinner"></span>
-              Creating...
+              {isUploadingPhotos ? 'Uploading Photos...' : 'Creating...'}
             </>
           ) : (
             'Create Event'

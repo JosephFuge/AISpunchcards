@@ -9,6 +9,7 @@ import {
 } from "react";
 import { AppUser } from "../models/appuser";
 import { Database } from "./firebase/database";
+import { FileStorage } from "./firebase/fileStorage";
 import { firebaseConfig } from "./firebase/firebaseConfig.js";
 import { initializeApp } from "firebase/app";
 import {
@@ -29,6 +30,7 @@ interface FirebaseContextType {
   setNewUser: (newUser: AppUser) => Promise<void>;
   userSignOut: () => Promise<void>;
   db: Database;
+  fileStorage: FileStorage;
 }
 
 interface FirebaseProviderProps {
@@ -42,6 +44,7 @@ export const FirebaseProvider: FC<FirebaseProviderProps> = ({ children }) => {
   const [user, setUser] = useState<AppUser | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const db = useMemo(() => new Database(app), []);
+  const fileStorage = useMemo(() => new FileStorage(app), []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -112,8 +115,9 @@ export const FirebaseProvider: FC<FirebaseProviderProps> = ({ children }) => {
       setNewUser,
       userSignOut,
       db,
+      fileStorage,
     }),
-    [user, isAuthenticated, googleSignIn, setNewUser, userSignOut, db]
+    [user, isAuthenticated, googleSignIn, setNewUser, userSignOut, db, fileStorage]
   );
 
   return (
