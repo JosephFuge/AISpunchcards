@@ -1,3 +1,7 @@
+# AIS Punchcard App
+
+## Setup Instructions
+
 Clone repo
 
 Run "npm ci"
@@ -23,3 +27,12 @@ Once you have been added as an editor on the Firebase project,
 6. Click "appusers" collection
 7. Assuming you have already logged in and created a user, find the user
 8. Set "isOfficer" to true
+
+## TODO
+- [ ] Enable searching of events, filtering of events by category
+- [ ] Add icons for event categories to help identify them visually
+- [ ] Enable editing of events
+- [ ] Enable creating a duplicate of events
+- [ ] When an event is deleted, delete the corresponding images in Firebase Storage
+- [ ] Refactor folder structure naming and database interactions to be backend-agnostic (don't use "firebase" in file/folder names, in case we switch to a different backend)
+

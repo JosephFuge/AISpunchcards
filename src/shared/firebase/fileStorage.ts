@@ -18,8 +18,6 @@ class FileStorage {
 
   async uploadEventPhoto(eventId: string, file: File): Promise<string> {
     try {
-      console.log('Starting upload for eventId:', eventId, 'file:', file.name, 'size:', file.size);
-
       // Validate inputs
       if (!eventId) {
         throw new Error('Event ID is required');
@@ -30,19 +28,13 @@ class FileStorage {
 
       // Create a unique filename using timestamp and original filename
       const timestamp = Date.now();
-      const fileExtension = file.name.split('.').pop();
       const fileName = `${timestamp}_${file.name}`;
 
       const filePath = `events/${eventId}/photos/${fileName}`;
-      console.log('Generated filename and file path:', fileName, filePath);
 
       // Create a reference to the file location in Firebase Storage
       const storageRef = ref(this.storage, filePath);
 
-      console.log('Storage reference created. Full path:', storageRef.fullPath);
-      console.log('Storage bucket:', storageRef.bucket);
-
-      console.log('About to call uploadBytes...');
       // Upload the file with a timeout
       const uploadPromise = uploadBytes(storageRef, file);
       const timeoutPromise = new Promise<never>((_, reject) => {
@@ -51,14 +43,10 @@ class FileStorage {
 
       const snapshot = await Promise.race([uploadPromise, timeoutPromise]);
 
-      console.log('Upload completed! Snapshot:', snapshot);
-      console.log('Image path after upload:', snapshot.ref.fullPath);
-
       console.log('Getting download URL...');
       // Get the download URL
       const downloadURL = await getDownloadURL(snapshot.ref);
 
-      console.log('File uploaded successfully. Download URL:', downloadURL);
       return downloadURL;
     } catch (error: any) {
       console.error('Error uploading file:', error);
