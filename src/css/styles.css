@@ -507,6 +507,19 @@ input#googleSignInBtn.ais-button {
   margin: 8px 0;
 }
 
+.rsvp-indicator {
+  display: inline-block;
+  margin-left: 12px;
+  padding: 4px 8px;
+  background-color: #4caf50;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 #root nav {
   position: fixed;
   top: 0;
@@ -518,6 +531,7 @@ input#googleSignInBtn.ais-button {
   flex-direction: row-reverse;
   align-items: center;
   justify-content: space-between;
+  z-index: 1000;
 }
 
 nav a {

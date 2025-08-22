@@ -26,10 +26,15 @@ export function EventCard({ ...EventCardProps }) {
     minute: "2-digit",
   });
 
+  // Check if current user has RSVP'd to this event
+  const hasRSVPd = fireContext?.user?.uid && EventCardProps.event.userAttendees.includes(fireContext.user.uid);
+
   return (
-    <div className="eventCard">
+    <Link to={`/event/${EventCardProps.event.id}`} className="eventCard">
       <div className="eventInfo">
-        <h3>{EventCardProps.event.title}</h3>
+        <h3>{EventCardProps.event.title}
+          {hasRSVPd && <span className="rsvp-indicator">✓ RSVP'd</span>}
+        </h3>
         <p>{formattedDate}</p>
         <p>{EventCardProps.event.location}</p>
         <p>{EventCardProps.event.description}</p>
@@ -48,10 +53,10 @@ export function EventCard({ ...EventCardProps }) {
             <p>Attended</p>
           </div>
           {/* <div className="eventOpen"> */}
-          <Link to={`/viewEvent/${EventCardProps.event.id}`}>Open</Link>
+          <div className="officer-open-link">Open</div>
           {/* </div> */}
         </div>
       )}
-    </div>
+    </Link>
   );
 }
