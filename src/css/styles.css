@@ -285,6 +285,31 @@ input#googleSignInBtn.ais-button {
   text-decoration: none;
 }
 
+.edit-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  background-color: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.edit-button:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 83, 159, 0.3);
+  color: white;
+  text-decoration: none;
+}
+
 /* EventCheckInPage styles */
 .event-checkin-container {
   max-width: 600px;

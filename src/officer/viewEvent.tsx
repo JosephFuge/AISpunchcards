@@ -60,16 +60,16 @@ export function ViewEvent() {
       {event ? (
         <div id="bodyContainer">
           <h2>{event.title}</h2>
-          
+
           {/* Event Photos */}
           {event.photoUrls && event.photoUrls.length > 0 && (
             <div className="event-photos">
               <h3>Event Photos</h3>
               <div className="photo-gallery">
                 {event.photoUrls.map((photoUrl, index) => (
-                  <img 
+                  <img
                     key={index}
-                    src={photoUrl} 
+                    src={photoUrl}
                     alt={`Event photo ${index + 1}`}
                     className="event-photo"
                   />
@@ -77,7 +77,7 @@ export function ViewEvent() {
               </div>
             </div>
           )}
-          
+
           <div className="event-details">
             <p><strong>Location:</strong> {event.location}</p>
             <p><strong>Date & Time:</strong> {eventDateTime}</p>
@@ -85,18 +85,18 @@ export function ViewEvent() {
             <p><strong>Description:</strong> {event.description}</p>
             {event.externalUrl && <p><strong>External Link:</strong> <a href={event.externalUrl} target="_blank" rel="noopener noreferrer">{event.externalUrl}</a></p>}
           </div>
-          
+
           <div className="qr-code-section">
             <h3>QR Code for Check-In</h3>
             {QRCodeData ? <img src={QRCodeData} alt="Event QR Code" className="qr-code-img" /> : <p>Loading QR Code...</p>}
             {QRCodeData ? (
               <a className="link-button" href={QRCodeData} download={`AIS_${event.title}.png`}>
-                Download QR Code
+                <span>Download QR Code</span>
               </a>
             ) : (
               <></>
             )}
-            
+
             <div className="event-actions">
               <Link to={`/event/${eventId}`} className="view-guest-button">
                 View as Guest
@@ -104,6 +104,27 @@ export function ViewEvent() {
               <Link to={`/editEvent/${eventId}`} className="edit-button">
                 Edit Event
               </Link>
+              <button
+                type="button"
+                className="edit-button"
+                onClick={() => {
+                  if (event) {
+                    // Create query parameters with event data, excluding date/time
+                    const params = new URLSearchParams({
+                      duplicate: 'true',
+                      title: event.title,
+                      description: event.description,
+                      location: event.location,
+                      handshakeUrl: event.externalUrl || '',
+                      category: event.category,
+                      eventDuration: event.eventDuration.toString()
+                    });
+                    navigate(`/createEvent?${params.toString()}`);
+                  }
+                }}
+              >
+                Duplicate Event
+              </button>
               <button
                 type="button"
                 className="danger-button"

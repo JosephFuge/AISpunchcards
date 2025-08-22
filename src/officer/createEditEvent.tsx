@@ -1,6 +1,6 @@
 // CreateEventForm.tsx
 import React, { useContext, useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Timestamp } from "firebase/firestore";
 import { ClubEvent } from "../models/clubevent";
 import { FirebaseContext } from "../shared/firebaseProvider";
@@ -9,7 +9,9 @@ import "../css/styles.css";
 
 export function CreateEvent() {
   const { eventId } = useParams<{ eventId: string }>();
+  const [searchParams] = useSearchParams();
   const isEditing = Boolean(eventId);
+  const isDuplicating = searchParams.get('duplicate') === 'true';
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -31,7 +33,7 @@ export function CreateEvent() {
   const fireContext = useContext(FirebaseContext);
   const navigate = useNavigate();
 
-  // Load existing event data for editing
+  // Load existing event data for editing or duplication
   useEffect(() => {
     const loadEventForEditing = async () => {
       if (isEditing && eventId && fireContext) {
@@ -57,8 +59,28 @@ export function CreateEvent() {
       }
     };
 
-    loadEventForEditing();
-  }, [isEditing, eventId, fireContext]);
+    const loadEventForDuplication = () => {
+      if (isDuplicating) {
+        setFormData({
+          title: searchParams.get('title') || "",
+          description: searchParams.get('description') || "",
+          location: searchParams.get('location') || "",
+          imgUrl: "",
+          handshakeUrl: searchParams.get('handshakeUrl') || "",
+          category: searchParams.get('category') || "",
+          eventDate: "", // Empty for duplication
+          eventTime: "", // Empty for duplication
+          eventDuration: searchParams.get('eventDuration') || "",
+        });
+      }
+    };
+
+    if (isEditing) {
+      loadEventForEditing();
+    } else if (isDuplicating) {
+      loadEventForDuplication();
+    }
+  }, [isEditing, isDuplicating, eventId, fireContext, searchParams]);
 
   // Clean up preview URLs when component unmounts
   useEffect(() => {
@@ -202,7 +224,7 @@ export function CreateEvent() {
       <title>AIS Events - Create Event</title>
       <script type="module" src="/js/createeditevent.js"></script>
       <form onSubmit={handleSubmit}>
-        <h2>{isEditing ? 'Edit Event' : 'Create Event'}</h2>
+        <h2>{isEditing ? 'Edit Event' : (isDuplicating ? 'Duplicate Event' : 'Create Event')}</h2>
         <div id="titleUnderline"></div>
         <label htmlFor="title">Event Title</label>
         <input
