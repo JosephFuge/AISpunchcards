@@ -87,6 +87,16 @@ class Database {
     await deleteDoc(doc(this.db, "events", eventId));
   }
 
+  async updateEvent(eventId: string, event: ClubEvent): Promise<void> {
+    try {
+      const eventRef = doc(this.db, "events", eventId).withConverter(clubEventConverter);
+      await setDoc(eventRef, event);
+    } catch (error) {
+      console.error("Error updating event: ", error);
+      throw error;
+    }
+  }
+
   async updateEventPhotos(eventId: string, photoUrls: string[]): Promise<void> {
     try {
       const eventRef = doc(this.db, "events", eventId);

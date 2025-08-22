@@ -101,6 +101,9 @@ export function ViewEvent() {
               <Link to={`/event/${eventId}`} className="view-guest-button">
                 View as Guest
               </Link>
+              <Link to={`/editEvent/${eventId}`} className="edit-button">
+                Edit Event
+              </Link>
               <button
                 type="button"
                 className="danger-button"

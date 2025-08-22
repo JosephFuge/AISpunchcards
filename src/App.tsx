@@ -29,6 +29,12 @@ function App() {
             }
           />
           <Route
+            path="/editEvent/:eventId"
+            element={
+              <ProtectedRoute isOfficerOnly={true} element={<CreateEvent />} />
+            }
+          />
+          <Route
             path="/viewEvent/:eventId"
             element={
               <ProtectedRoute isOfficerOnly={true} element={<ViewEvent />} />

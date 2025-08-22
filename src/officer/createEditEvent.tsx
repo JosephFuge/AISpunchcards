@@ -1,6 +1,6 @@
 // CreateEventForm.tsx
 import React, { useContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Timestamp } from "firebase/firestore";
 import { ClubEvent } from "../models/clubevent";
 import { FirebaseContext } from "../shared/firebaseProvider";
@@ -8,6 +8,8 @@ import "../css/form.css";
 import "../css/styles.css";
 
 export function CreateEvent() {
+  const { eventId } = useParams<{ eventId: string }>();
+  const isEditing = Boolean(eventId);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -20,6 +22,7 @@ export function CreateEvent() {
     eventDuration: "",
     // Add other fields as necessary
   });
+  const [originalEvent, setOriginalEvent] = useState<ClubEvent | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
@@ -27,6 +30,35 @@ export function CreateEvent() {
 
   const fireContext = useContext(FirebaseContext);
   const navigate = useNavigate();
+
+  // Load existing event data for editing
+  useEffect(() => {
+    const loadEventForEditing = async () => {
+      if (isEditing && eventId && fireContext) {
+        const eventData = await fireContext.db.fetchEvent(eventId);
+        if (eventData) {
+          setOriginalEvent(eventData);
+          const eventDateTime = eventData.datetime.toDate();
+          const eventDate = eventDateTime.toISOString().split('T')[0];
+          const eventTime = eventDateTime.toTimeString().slice(0, 5);
+          
+          setFormData({
+            title: eventData.title,
+            description: eventData.description,
+            location: eventData.location,
+            imgUrl: eventData.imgUrl,
+            handshakeUrl: eventData.externalUrl || "",
+            category: eventData.category,
+            eventDate: eventDate,
+            eventTime: eventTime,
+            eventDuration: eventData.eventDuration.toString(),
+          });
+        }
+      }
+    };
+
+    loadEventForEditing();
+  }, [isEditing, eventId, fireContext]);
 
   // Clean up preview URLs when component unmounts
   useEffect(() => {
@@ -83,43 +115,81 @@ export function CreateEvent() {
       const dateTime = Timestamp.fromDate(
         new Date(`${formData.eventDate}T${formData.eventTime}`)
       );
-      const newEvent = new ClubEvent(
-        null, // Assuming null ID because Firestore generates this
-        formData.title,
-        formData.description,
-        formData.location,
-        "", // imgUrl will be set after photo upload
-        [], // photoUrls will be set after photo upload
-        formData.handshakeUrl,
-        formData.category,
-        dateTime,
-        parseInt(formData.eventDuration),
-        [], // list of user attendees is empty, will be filled as people check in
-        0 // additional attendees is 0, increases as people mark that they brought a plus one
-      );
+      
+      if (isEditing && eventId && originalEvent) {
+        // Update existing event
+        const updatedEvent = new ClubEvent(
+          eventId,
+          formData.title,
+          formData.description,
+          formData.location,
+          originalEvent.imgUrl, // Keep existing imgUrl
+          originalEvent.photoUrls, // Keep existing photoUrls for now
+          formData.handshakeUrl,
+          formData.category,
+          dateTime,
+          parseInt(formData.eventDuration),
+          originalEvent.userAttendees, // Keep existing attendees
+          originalEvent.additionalAttendance // Keep existing additional attendees
+        );
 
-      console.log(
-        `Category: ${newEvent.category}, Duration: ${newEvent.eventDuration}`
-      );
+        await fireContext?.db.updateEvent(eventId, updatedEvent);
 
-      // First, add the event to get the event ID
-      const result = await fireContext?.db.addEvent(newEvent);
-      const eventId = result?.event.id;
+        // If there are new photos to upload
+        if (selectedFiles.length > 0 && fireContext?.fileStorage) {
+          setIsUploadingPhotos(true);
+          
+          // Upload new photos to Firebase Storage
+          const photoUrls = await fireContext.fileStorage.uploadMultipleEventPhotos(eventId, selectedFiles);
+          
+          // Combine existing and new photo URLs
+          const allPhotoUrls = [...originalEvent.photoUrls, ...photoUrls];
+          
+          // Update the event document with all photo URLs
+          await fireContext.db.updateEventPhotos(eventId, allPhotoUrls);
+        }
 
-      // If there are photos to upload and we have an event ID
-      if (selectedFiles.length > 0 && eventId && fireContext?.fileStorage) {
-        setIsUploadingPhotos(true);
-        
-        // Upload photos to Firebase Storage
-        const photoUrls = await fireContext.fileStorage.uploadMultipleEventPhotos(eventId, selectedFiles);
-        
-        // Update the event document with photo URLs
-        await fireContext.db.updateEventPhotos(eventId, photoUrls);
+        navigate(`/viewEvent/${eventId}`);
+      } else {
+        // Create new event
+        const newEvent = new ClubEvent(
+          null, // Assuming null ID because Firestore generates this
+          formData.title,
+          formData.description,
+          formData.location,
+          "", // imgUrl will be set after photo upload
+          [], // photoUrls will be set after photo upload
+          formData.handshakeUrl,
+          formData.category,
+          dateTime,
+          parseInt(formData.eventDuration),
+          [], // list of user attendees is empty, will be filled as people check in
+          0 // additional attendees is 0, increases as people mark that they brought a plus one
+        );
+
+        console.log(
+          `Category: ${newEvent.category}, Duration: ${newEvent.eventDuration}`
+        );
+
+        // First, add the event to get the event ID
+        const result = await fireContext?.db.addEvent(newEvent);
+        const newEventId = result?.event.id;
+
+        // If there are photos to upload and we have an event ID
+        if (selectedFiles.length > 0 && newEventId && fireContext?.fileStorage) {
+          setIsUploadingPhotos(true);
+          
+          // Upload photos to Firebase Storage
+          const photoUrls = await fireContext.fileStorage.uploadMultipleEventPhotos(newEventId, selectedFiles);
+          
+          // Update the event document with photo URLs
+          await fireContext.db.updateEventPhotos(newEventId, photoUrls);
+        }
+
+        navigate('/eventCreated');
       }
-
-      navigate('/eventCreated');
     } catch (error) {
-      console.error("Error adding event: ", error);
+      console.error(`Error ${isEditing ? 'updating' : 'adding'} event: `, error);
       // Handle the error appropriately
     } finally {
       setIsLoading(false);
@@ -132,7 +202,7 @@ export function CreateEvent() {
       <title>AIS Events - Create Event</title>
       <script type="module" src="/js/createeditevent.js"></script>
       <form onSubmit={handleSubmit}>
-        <h2>Create Event</h2>
+        <h2>{isEditing ? 'Edit Event' : 'Create Event'}</h2>
         <div id="titleUnderline"></div>
         <label htmlFor="title">Event Title</label>
         <input
@@ -151,6 +221,7 @@ export function CreateEvent() {
             id="discoverCategory"
             name="category"
             value="Discover"
+            checked={formData.category === "Discover"}
             onChange={handleChange}
             required
           ></input>
@@ -160,6 +231,7 @@ export function CreateEvent() {
             id="connectCategory"
             name="category"
             value="Connect"
+            checked={formData.category === "Connect"}
             onChange={handleChange}
             required
           ></input>
@@ -169,6 +241,7 @@ export function CreateEvent() {
             id="socializeCategory"
             name="category"
             value="Socialize"
+            checked={formData.category === "Socialize"}
             onChange={handleChange}
             required
           ></input>
@@ -178,6 +251,7 @@ export function CreateEvent() {
             id="learnCategory"
             name="category"
             value="Learn"
+            checked={formData.category === "Learn"}
             onChange={handleChange}
             required
           ></input>
@@ -187,6 +261,7 @@ export function CreateEvent() {
             id="serveCategory"
             name="category"
             value="Serve"
+            checked={formData.category === "Serve"}
             onChange={handleChange}
             required
           ></input>
@@ -216,6 +291,7 @@ export function CreateEvent() {
           type="number"
           id="eventDuration"
           name="eventDuration"
+          value={formData.eventDuration}
           min="0"
           step="0.1"
           placeholder="0.5, 1, 2, etc."
@@ -292,10 +368,10 @@ export function CreateEvent() {
           {isLoading ? (
             <>
               <span className="spinner"></span>
-              {isUploadingPhotos ? 'Uploading Photos...' : 'Creating...'}
+              {isUploadingPhotos ? 'Uploading Photos...' : (isEditing ? 'Updating...' : 'Creating...')}
             </>
           ) : (
-            'Create Event'
+            isEditing ? 'Update Event' : 'Create Event'
           )}
         </button>
       </form>
