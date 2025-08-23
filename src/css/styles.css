@@ -344,6 +344,9 @@ input#googleSignInBtn.ais-button {
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .category-discover { background-color: #e3f2fd; color: #1976d2; }

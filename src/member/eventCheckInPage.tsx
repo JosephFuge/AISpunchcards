@@ -5,6 +5,7 @@ import "../css/submit_success.css";
 import "../css/styles.css";
 import { ClubEvent } from "../models/clubevent";
 import { getAuth } from "firebase/auth";
+import { Calendar, Clock, MapPin, FileText, Users, User, Compass, Link as LinkIcon, GraduationCap, Heart } from "phosphor-react";
 
 export function EventCheckInPage() {
   const { eventId } = useParams();
@@ -14,6 +15,23 @@ export function EventCheckInPage() {
   const [curEvent, setCurEvent] = useState<ClubEvent | null>(null);
   const [eventDateTime, setEventDateTime] = useState<string>("");
   const [isCheckedIn, setIsCheckedIn] = useState(false);
+
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case "Discover":
+        return <Compass size={20} />;
+      case "Connect":
+        return <LinkIcon size={20} />;
+      case "Socialize":
+        return <Users size={20} />;
+      case "Learn":
+        return <GraduationCap size={20} />;
+      case "Serve":
+        return <Heart size={20} />;
+      default:
+        return null;
+    }
+  };
 
   // Get current event so we can check for handshake url
   useEffect(() => {
@@ -107,6 +125,7 @@ export function EventCheckInPage() {
         <h1>{curEvent.title}</h1>
         <div className="event-category-badge">
           <span className={`category-${curEvent.category.toLowerCase()}`}>
+            {getCategoryIcon(curEvent.category)}
             {curEvent.category}
           </span>
         </div>
@@ -136,7 +155,7 @@ export function EventCheckInPage() {
 
       <div className="event-details-checkin">
         <div className="detail-item">
-          <span className="detail-icon">📅</span>
+          <span className="detail-icon"><Calendar size={20} /></span>
           <div>
             <strong>Date & Time</strong>
             <p>{eventDateTime}</p>
@@ -144,7 +163,7 @@ export function EventCheckInPage() {
         </div>
 
         <div className="detail-item">
-          <span className="detail-icon">⏱️</span>
+          <span className="detail-icon"><Clock size={20} /></span>
           <div>
             <strong>Duration</strong>
             <p>{curEvent.eventDuration} hour{curEvent.eventDuration !== 1 ? 's' : ''}</p>
@@ -152,7 +171,7 @@ export function EventCheckInPage() {
         </div>
 
         <div className="detail-item">
-          <span className="detail-icon">📍</span>
+          <span className="detail-icon"><MapPin size={20} /></span>
           <div>
             <strong>Location</strong>
             <p>{curEvent.location}</p>
@@ -160,7 +179,7 @@ export function EventCheckInPage() {
         </div>
 
         <div className="detail-item description">
-          <span className="detail-icon">📝</span>
+          <span className="detail-icon"><FileText size={20} /></span>
           <div>
             <strong>Description</strong>
             <p>{curEvent.description}</p>
@@ -177,7 +196,7 @@ export function EventCheckInPage() {
             className="checkin-btn yes-btn"
             onClick={() => handleCheckIn(true)}
           >
-            <span className="btn-icon">👥</span>
+            <span className="btn-icon"><Users size={24} /></span>
             <div>
               <strong>Yes</strong>
               <small>I brought someone with me</small>
@@ -188,7 +207,7 @@ export function EventCheckInPage() {
             className="checkin-btn no-btn"
             onClick={() => handleCheckIn(false)}
           >
-            <span className="btn-icon">👤</span>
+            <span className="btn-icon"><User size={24} /></span>
             <div>
               <strong>No</strong>
               <small>Just me today</small>

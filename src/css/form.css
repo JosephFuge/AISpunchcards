@@ -108,6 +108,14 @@ form input#googleSignInBtn.ais-button {
   font-size: 1em;
   transition: border 0.25s ease-in-out;
   border: var(--grey-accent) 1px solid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.radioSelector label span {
+  margin: 0;
 }
 
 .radioSelector label:hover {

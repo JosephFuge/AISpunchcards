@@ -29,8 +29,11 @@ export function EventCard({ ...EventCardProps }) {
   // Check if current user has RSVP'd to this event
   const hasRSVPd = fireContext?.user?.uid && EventCardProps.event.userAttendees.includes(fireContext.user.uid);
 
+  const isOfficer = fireContext != null && fireContext.user != null && fireContext.user.isOfficer;
+  const eventUrl = isOfficer ? `/viewEvent/${EventCardProps.event.id}` : `/event/${EventCardProps.event.id}`;
+
   return (
-    <Link to={`/event/${EventCardProps.event.id}`} className="eventCard">
+    <Link to={eventUrl} className="eventCard">
       <div className="eventInfo">
         <h3>{EventCardProps.event.title}
           {hasRSVPd && <span className="rsvp-indicator">✓ RSVP'd</span>}
@@ -40,7 +43,7 @@ export function EventCard({ ...EventCardProps }) {
         <p>{EventCardProps.event.description}</p>
       </div>
       {/* Allow only officers to open the event and see further details, including QR code */}
-      {fireContext != null && fireContext.user != null && fireContext.user.isOfficer && EventCardProps.event && EventCardProps.event.userAttendees && (
+      {isOfficer && EventCardProps.event && EventCardProps.event.userAttendees && (
         <div className="officerEventInfo">
           <div
             className={`eventAttendance ${

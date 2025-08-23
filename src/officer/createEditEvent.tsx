@@ -4,6 +4,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Timestamp } from "firebase/firestore";
 import { ClubEvent } from "../models/clubevent";
 import { FirebaseContext } from "../shared/firebaseProvider";
+import { Compass, Link as LinkIcon, Users, GraduationCap, Heart } from "phosphor-react";
 import "../css/form.css";
 import "../css/styles.css";
 
@@ -33,6 +34,23 @@ export function CreateEvent() {
   const fireContext = useContext(FirebaseContext);
   const navigate = useNavigate();
 
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case "Discover":
+        return <Compass size={18} />;
+      case "Connect":
+        return <LinkIcon size={18} />;
+      case "Socialize":
+        return <Users size={18} />;
+      case "Learn":
+        return <GraduationCap size={18} />;
+      case "Serve":
+        return <Heart size={18} />;
+      default:
+        return null;
+    }
+  };
+
   // Load existing event data for editing or duplication
   useEffect(() => {
     const loadEventForEditing = async () => {
@@ -43,7 +61,7 @@ export function CreateEvent() {
           const eventDateTime = eventData.datetime.toDate();
           const eventDate = eventDateTime.toISOString().split('T')[0];
           const eventTime = eventDateTime.toTimeString().slice(0, 5);
-          
+
           setFormData({
             title: eventData.title,
             description: eventData.description,
@@ -106,13 +124,13 @@ export function CreateEvent() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
-      
+
       // Clean up previous preview URLs
       previewUrls.forEach(url => URL.revokeObjectURL(url));
-      
+
       // Create new preview URLs
       const newPreviewUrls = filesArray.map(file => URL.createObjectURL(file));
-      
+
       setSelectedFiles(filesArray);
       setPreviewUrls(newPreviewUrls);
     }
@@ -123,7 +141,7 @@ export function CreateEvent() {
     if (previewUrls[indexToRemove]) {
       URL.revokeObjectURL(previewUrls[indexToRemove]);
     }
-    
+
     setSelectedFiles(files => files.filter((_, index) => index !== indexToRemove));
     setPreviewUrls(urls => urls.filter((_, index) => index !== indexToRemove));
   };
@@ -131,13 +149,13 @@ export function CreateEvent() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
-    
+
     try {
       // Construct a new ClubEvent. Convert date and time to a Firestore Timestamp if necessary
       const dateTime = Timestamp.fromDate(
         new Date(`${formData.eventDate}T${formData.eventTime}`)
       );
-      
+
       if (isEditing && eventId && originalEvent) {
         // Update existing event
         const updatedEvent = new ClubEvent(
@@ -160,13 +178,13 @@ export function CreateEvent() {
         // If there are new photos to upload
         if (selectedFiles.length > 0 && fireContext?.fileStorage) {
           setIsUploadingPhotos(true);
-          
+
           // Upload new photos to Firebase Storage
           const photoUrls = await fireContext.fileStorage.uploadMultipleEventPhotos(eventId, selectedFiles);
-          
+
           // Combine existing and new photo URLs
           const allPhotoUrls = [...originalEvent.photoUrls, ...photoUrls];
-          
+
           // Update the event document with all photo URLs
           await fireContext.db.updateEventPhotos(eventId, allPhotoUrls);
         }
@@ -200,10 +218,10 @@ export function CreateEvent() {
         // If there are photos to upload and we have an event ID
         if (selectedFiles.length > 0 && newEventId && fireContext?.fileStorage) {
           setIsUploadingPhotos(true);
-          
+
           // Upload photos to Firebase Storage
           const photoUrls = await fireContext.fileStorage.uploadMultipleEventPhotos(newEventId, selectedFiles);
-          
+
           // Update the event document with photo URLs
           await fireContext.db.updateEventPhotos(newEventId, photoUrls);
         }
@@ -247,7 +265,10 @@ export function CreateEvent() {
             onChange={handleChange}
             required
           ></input>
-          <label htmlFor="discoverCategory">Discover</label>
+          <label htmlFor="discoverCategory">
+            {getCategoryIcon("Discover")}
+            <span>Discover</span>
+          </label>
           <input
             type="radio"
             id="connectCategory"
@@ -257,7 +278,10 @@ export function CreateEvent() {
             onChange={handleChange}
             required
           ></input>
-          <label htmlFor="connectCategory">Connect</label>
+          <label htmlFor="connectCategory">
+            {getCategoryIcon("Connect")}
+            <span>Connect</span>
+          </label>
           <input
             type="radio"
             id="socializeCategory"
@@ -267,7 +291,10 @@ export function CreateEvent() {
             onChange={handleChange}
             required
           ></input>
-          <label htmlFor="socializeCategory">Socialize</label>
+          <label htmlFor="socializeCategory">
+            {getCategoryIcon("Socialize")}
+            <span>Socialize</span>
+          </label>
           <input
             type="radio"
             id="learnCategory"
@@ -277,7 +304,10 @@ export function CreateEvent() {
             onChange={handleChange}
             required
           ></input>
-          <label htmlFor="learnCategory">Learn</label>
+          <label htmlFor="learnCategory">
+            {getCategoryIcon("Learn")}
+            <span>Learn</span>
+          </label>
           <input
             type="radio"
             id="serveCategory"
@@ -287,7 +317,10 @@ export function CreateEvent() {
             onChange={handleChange}
             required
           ></input>
-          <label htmlFor="serveCategory">Serve</label>
+          <label htmlFor="serveCategory">
+            {getCategoryIcon("Serve")}
+            <span>Serve</span>
+          </label>
         </div>
 
         <label htmlFor="eventDate">Event Date</label>
@@ -347,7 +380,7 @@ export function CreateEvent() {
           onChange={handleChange}
           placeholder="Handshake URL (optional)"
         />
-        
+
         <label htmlFor="eventPhotos">Event Photos (optional)</label>
         <input
           type="file"
@@ -358,7 +391,7 @@ export function CreateEvent() {
           onChange={handleFileChange}
           className="file-input"
         />
-        
+
         {selectedFiles.length > 0 && (
           <div className="selected-files">
             <p>Selected photos:</p>
@@ -366,8 +399,8 @@ export function CreateEvent() {
               {selectedFiles.map((file, index) => (
                 <div key={index} className="image-preview-item">
                   <div className="image-preview-container">
-                    <img 
-                      src={previewUrls[index]} 
+                    <img
+                      src={previewUrls[index]}
                       alt={`Preview ${index + 1}`}
                       className="image-preview"
                     />
@@ -385,7 +418,7 @@ export function CreateEvent() {
             </div>
           </div>
         )}
-        
+
         <button type="submit" disabled={isLoading || isUploadingPhotos}>
           {isLoading ? (
             <>

@@ -29,10 +29,17 @@ Once you have been added as an editor on the Firebase project,
 8. Set "isOfficer" to true
 
 ## TODO
-- [ ] Enable searching of events, filtering of events by category
-- [ ] Add icons for event categories to help identify them visually
+- [ ] Add a home page explaining the site (Right now it's just a login button)
+- [ ] Add filtering of events by time (next week, month, year)
+- [ ] Enable users to download .ics files to add events to their calendar
+    - Consider hooking up to a Google Calendar API or something else so that, if events are created in the AIS calendar, they are created in this website. Likewise, the event is updated in the users' calendar automatically. Not sure how feasible this is.
+- [ ] Add further tagging of events beyond category - i.e. IS Academy, Tech Night, Sponsorships. This would be more relevant and helpful than the vague "Learn", "Social", "Discover", etc. categories
+- [ ] When an event is deleted, delete the corresponding images in Firebase Storage (careful that duplicated events with the same photo URLs don't exist before deleting)
+- [ ] Refactor folder structure naming and database interactions to be backend-agnostic (don't use "firebase" in file/folder names, in case we switch to a different backend)
+- [ ] Allow users to filter for events that they have marked as "attending"
+- [ ] Redirect user to their original destination after logging in (currently it defaults to event list page)
+- [ ] Enable searching of events by title and description
+- [x] ~Enable filtering of events by category~
+- [x] ~Add icons for event categories to help identify them visually~
 - [x] ~Enable editing of events~
 - [x] ~Enable creating a duplicate of events~
-- [ ] When an event is deleted, delete the corresponding images in Firebase Storage
-- [ ] Refactor folder structure naming and database interactions to be backend-agnostic (don't use "firebase" in file/folder names, in case we switch to a different backend)
-
