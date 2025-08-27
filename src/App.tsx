@@ -9,6 +9,7 @@ import ProtectedRoute from "./officer/protectedRoute";
 import { CreateEvent } from "./officer/createEditEvent";
 import { UserHome } from "./member/userHome";
 import { ViewEvent } from "./officer/viewEvent";
+import PunchCard from "./member/punchCardVisual";
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
             }
           />
           <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/punchcard" element={<PunchCard />} />
         </Routes>
       </div>
     </BrowserRouter>
