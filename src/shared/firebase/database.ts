@@ -5,6 +5,7 @@
 import { FirebaseApp } from "firebase/app";
 import { AppUser, appUserConverter } from "../../models/appuser.js";
 import { ClubEvent, clubEventConverter } from "../../models/clubevent";
+import { EventTemplate, eventTemplateConverter } from "../../models/eventTemplate";
 import {
   getFirestore,
   collection,
@@ -171,6 +172,78 @@ class Database {
     // Returns undefined if no matching user is found
     const userData = userSnapshot.data();
     return userData;
+  }
+
+  // Event Template Management
+  async addEventTemplate(template: EventTemplate) {
+    try {
+      const docRef = await addDoc(
+        collection(this.db, "eventTemplates").withConverter(eventTemplateConverter),
+        template
+      );
+
+      const updatedTemplate = { ...template, id: docRef.id };
+      await setDoc(docRef, updatedTemplate);
+
+      return { ...docRef, template: updatedTemplate };
+    } catch (error) {
+      console.error("Error adding event template: ", error);
+      throw error;
+    }
+  }
+
+  async fetchEventTemplates() {
+    try {
+      const docsSnapshot = await getDocs(
+        collection(this.db, "eventTemplates").withConverter(eventTemplateConverter)
+      );
+      const templates: EventTemplate[] = [];
+      docsSnapshot.forEach((doc) => {
+        templates.push(doc.data());
+      });
+      return templates;
+    } catch (error) {
+      console.error("Error fetching event templates: ", error);
+      throw error;
+    }
+  }
+
+  async fetchEventTemplate(templateId: string): Promise<EventTemplate | undefined> {
+    try {
+      const templateRef = doc(this.db, "eventTemplates", templateId).withConverter(
+        eventTemplateConverter
+      );
+      const templateSnapshot = await getDoc(templateRef);
+
+      if (!templateSnapshot.exists()) {
+        console.error("Event template document does not exist");
+        return undefined;
+      }
+
+      return templateSnapshot.data();
+    } catch (error) {
+      console.error("Error fetching event template: ", error);
+      throw error;
+    }
+  }
+
+  async updateEventTemplate(templateId: string, template: EventTemplate): Promise<void> {
+    try {
+      const templateRef = doc(this.db, "eventTemplates", templateId).withConverter(eventTemplateConverter);
+      await setDoc(templateRef, template);
+    } catch (error) {
+      console.error("Error updating event template: ", error);
+      throw error;
+    }
+  }
+
+  async deleteEventTemplate(templateId: string): Promise<void> {
+    try {
+      await deleteDoc(doc(this.db, "eventTemplates", templateId));
+    } catch (error) {
+      console.error("Error deleting event template: ", error);
+      throw error;
+    }
   }
 }
 

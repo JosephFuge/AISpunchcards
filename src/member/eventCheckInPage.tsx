@@ -188,32 +188,51 @@ export function EventCheckInPage() {
       </div>
 
       <div className="checkin-section">
-        <h2>Complete Your Check-In</h2>
-        <p>Did you bring a plus one with you today?</p>
+        {!fireContext?.isAuthenticated ? (
+          <>
+            <h2>Sign In to Check In</h2>
+            <p>Please sign in with your Google account to check in to this event.</p>
+            <button
+              className="checkin-btn login-btn mx-auto"
+              onClick={() => fireContext?.googleSignIn()}
+            >
+              <span className="btn-icon"><User size={24} /></span>
+              <div>
+                <strong>Sign In with Google</strong>
+                <small>Required to check in to events</small>
+              </div>
+            </button>
+          </>
+        ) : (
+          <>
+            <h2>Complete Your Check-In</h2>
+            <p>Did you bring a plus one with you today?</p>
 
-        <div className="checkin-buttons">
-          <button
-            className="checkin-btn yes-btn"
-            onClick={() => handleCheckIn(true)}
-          >
-            <span className="btn-icon"><Users size={24} /></span>
-            <div>
-              <strong>Yes</strong>
-              <small>I brought someone with me</small>
-            </div>
-          </button>
+            <div className="checkin-buttons">
+              <button
+                className="checkin-btn yes-btn"
+                onClick={() => handleCheckIn(true)}
+              >
+                <span className="btn-icon"><Users size={24} /></span>
+                <div>
+                  <strong>Yes</strong>
+                  <small>I brought someone with me</small>
+                </div>
+              </button>
 
-          <button
-            className="checkin-btn no-btn"
-            onClick={() => handleCheckIn(false)}
-          >
-            <span className="btn-icon"><User size={24} /></span>
-            <div>
-              <strong>No</strong>
-              <small>Just me today</small>
+              <button
+                className="checkin-btn no-btn"
+                onClick={() => handleCheckIn(false)}
+              >
+                <span className="btn-icon"><User size={24} /></span>
+                <div>
+                  <strong>No</strong>
+                  <small>Just me today</small>
+                </div>
+              </button>
             </div>
-          </button>
-        </div>
+          </>
+        )}
       </div>
     </div>
   );

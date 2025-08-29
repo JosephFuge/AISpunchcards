@@ -3,7 +3,9 @@ import React, { useContext, useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Timestamp } from "firebase/firestore";
 import { ClubEvent } from "../models/clubevent";
+import { EventTemplate } from "../models/eventTemplate";
 import { FirebaseContext } from "../shared/firebaseProvider";
+import { TemplateSelector } from "./templateSelector";
 import { Compass, Link as LinkIcon, Users, GraduationCap, Heart } from "phosphor-react";
 import "../css/form.css";
 import "../css/styles.css";
@@ -30,6 +32,8 @@ export function CreateEvent() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<EventTemplate | null>(null);
+  const [showTemplateSelector, setShowTemplateSelector] = useState(true);
 
   const fireContext = useContext(FirebaseContext);
   const navigate = useNavigate();
@@ -95,10 +99,32 @@ export function CreateEvent() {
 
     if (isEditing) {
       loadEventForEditing();
+      setShowTemplateSelector(false); // Hide template selector when editing
     } else if (isDuplicating) {
       loadEventForDuplication();
+      setShowTemplateSelector(false); // Hide template selector when duplicating
     }
   }, [isEditing, isDuplicating, eventId, fireContext, searchParams]);
+
+  // Handle template selection
+  const handleTemplateSelect = (template: EventTemplate | null) => {
+    setSelectedTemplate(template);
+    if (template) {
+      const templateData = template.toClubEventData();
+      setFormData(prevData => ({
+        ...prevData,
+        title: templateData.title,
+        description: templateData.description,
+        location: templateData.location,
+        imgUrl: templateData.imgUrl,
+        handshakeUrl: templateData.externalUrl,
+        category: templateData.category,
+        eventDuration: templateData.eventDuration.toString(),
+        // Don't set date/time from template - these should always be fresh
+      }));
+    }
+    setShowTemplateSelector(false);
+  };
 
   // Clean up preview URLs when component unmounts
   useEffect(() => {
@@ -241,9 +267,44 @@ export function CreateEvent() {
     <div>
       <title>AIS Events - Create Event</title>
       <script type="module" src="/js/createeditevent.js"></script>
+      {showTemplateSelector && !isEditing && !isDuplicating && (
+        <TemplateSelector 
+          onTemplateSelect={handleTemplateSelect}
+          selectedTemplate={selectedTemplate}
+        />
+      )}
+
       <form onSubmit={handleSubmit}>
         <h2>{isEditing ? 'Edit Event' : (isDuplicating ? 'Duplicate Event' : 'Create Event')}</h2>
         <div id="titleUnderline"></div>
+
+        {!showTemplateSelector && !isEditing && !isDuplicating && selectedTemplate && (
+          <div className="selected-template-info">
+            <p>Using template: <strong>{selectedTemplate.name}</strong></p>
+            <button 
+              type="button" 
+              className="btn btn-outline-secondary btn-sm"
+              onClick={() => {
+                setShowTemplateSelector(true);
+                setSelectedTemplate(null);
+                // Reset form data when switching templates
+                setFormData({
+                  title: "",
+                  description: "",
+                  location: "",
+                  imgUrl: "",
+                  handshakeUrl: "",
+                  category: "",
+                  eventDate: "",
+                  eventTime: "",
+                  eventDuration: "",
+                });
+              }}
+            >
+              Change Template
+            </button>
+          </div>
+        )}
         <label htmlFor="title">Event Title</label>
         <input
           type="text"
