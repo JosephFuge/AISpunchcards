@@ -1,10 +1,12 @@
 // CreateEventForm.js
+import { useTranslation } from "react-i18next";
 import React, { useState } from "react";
 import { Timestamp } from "firebase/firestore"; // Import Timestamp from Firestore
 import { Database } from "/path/to/js/firebase/database"; // Adjust the import path as necessary
 import { ClubEvent } from "/path/to/js/models/clubevent"; // Adjust the import path as necessary
 
 function CreateEvent() {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     eventTitle: "",
     eventDate: "",
@@ -52,12 +54,12 @@ function CreateEvent() {
     <div>
       <meta charSet="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>AIS Events - Create Event</title>
+      <title>{t("ais_events__create_event")}</title>
       <script type="module" src="/js/createeditevent.js"></script>
       <form onSubmit={handleSubmit}>
-        <h2>Create Event</h2>
+        <h2>{t("create_event")}</h2>
         <div id="titleUnderline"></div>
-        <label htmlFor="eventTitle">Event Title</label>
+        <label htmlFor="eventTitle">{t("event_title")}</label>
         <input
           type="text"
           id="eventTitle"
@@ -66,7 +68,7 @@ function CreateEvent() {
           onChange={handleChange}
           required
         />
-        <label htmlFor="eventDate">Event Date</label>
+        <label htmlFor="eventDate">{t("event_date")}</label>
         <input
           type="date"
           id="eventDate"
@@ -75,7 +77,7 @@ function CreateEvent() {
           onChange={handleChange}
           required
         />
-        <label htmlFor="eventTime">Event Time</label>
+        <label htmlFor="eventTime">{t("event_time")}</label>
         <input
           type="time"
           id="eventTime"
@@ -84,26 +86,26 @@ function CreateEvent() {
           onChange={handleChange}
           required
         />
-        <label htmlFor="eventLocation">Event Location</label>
+        <label htmlFor="eventLocation">{t("event_location")}</label>
         <input
           type="text"
           id="eventLocation"
           name="eventLocation"
           value={formData.eventLocation}
           onChange={handleChange}
-          placeholder="Room number, building, etc."
+          placeholder={t("room_number_building_etc")}
           required
         />
-        <label htmlFor="eventDescription">Event Description</label>
+        <label htmlFor="eventDescription">{t("event_description")}</label>
         <textarea
           id="eventDescription"
           name="eventDescription"
           value={formData.eventDescription}
           onChange={handleChange}
-          placeholder="Who the event is for, length of event, etc."
+          placeholder={t("who_the_event_is_for_length_of_event_etc")}
           required
         ></textarea>
-        <button type="submit">Create Event</button>
+        <button type="submit">{t("create_event")}</button>
       </form>
     </div>
   );
