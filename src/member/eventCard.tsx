@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useContext } from "react";
 import { ClubEvent } from "../models/clubevent";
 import { FirebaseContext } from "../shared/firebaseProvider";
@@ -10,6 +11,7 @@ interface EventCardProps {
 }
 
 export function EventCard({ ...EventCardProps }) {
+  const { t } = useTranslation();
   const fireContext = useContext(FirebaseContext);
 
   const currentEvent = {
@@ -45,7 +47,7 @@ export function EventCard({ ...EventCardProps }) {
       <div className="eventInfo">
         <h3>
           {EventCardProps.event.title}
-          {hasRSVPd && <span className="rsvp-indicator">✓ RSVP'd</span>}
+          {hasRSVPd && <span className="rsvp-indicator">{t("_rsvpd")}</span>}
         </h3>
         <p>{formattedDate}</p>
         <p>{EventCardProps.event.location}</p>

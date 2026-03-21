@@ -1,15 +1,17 @@
+import { useTranslation } from "react-i18next";
 export function CreateProfile() {
+  const { t } = useTranslation();
   return (
     <form id="createAccount">
-      <h2>Create Account</h2>
+      <h2>{t("create_account")}</h2>
       <div id="titleUnderline"></div>
-      <label htmlFor="firstName">First Name</label>
+      <label htmlFor="firstName">{t("first_name")}</label>
       <input type="text" id="firstName" name="firstName" required></input>
-      <label htmlFor="lastName">Last Name</label>
+      <label htmlFor="lastName">{t("last_name")}</label>
       <input type="text" id="lastName" name="lastName" required></input>
-      <label htmlFor="netID">Net ID</label>
+      <label htmlFor="netID">{t("net_id")}</label>
       <input type="text" id="netID" name="netID" required></input>
-      <p>Student Type</p>
+      <p>{t("student_type")}</p>
       <div className="radioSelector">
         <input
           type="radio"
@@ -18,7 +20,7 @@ export function CreateProfile() {
           value="junior"
           required
         ></input>
-        <label htmlFor="junior">IS Junior Core</label>
+        <label htmlFor="junior">{t("is_junior_core")}</label>
         <input
           type="radio"
           id="senior"
@@ -26,7 +28,7 @@ export function CreateProfile() {
           value="senior"
           required
         ></input>
-        <label htmlFor="senior">IS Senior</label>
+        <label htmlFor="senior">{t("is_senior")}</label>
         <input
           type="radio"
           id="mism"
@@ -42,7 +44,7 @@ export function CreateProfile() {
           value="other-byu"
           required
         ></input>
-        <label htmlFor="other-byu">BYU Student</label>
+        <label htmlFor="other-byu">{t("byu_student")}</label>
         <input
           type="radio"
           id="other-guest"
@@ -50,9 +52,9 @@ export function CreateProfile() {
           value="other-guest"
           required
         ></input>
-        <label htmlFor="other-guest">Other/Guest</label>
+        <label htmlFor="other-guest">{t("otherguest")}</label>
       </div>
-      <button type="submit">Create Account</button>
+      <button type="submit">{t("create_account")}</button>
     </form>
   );
 }

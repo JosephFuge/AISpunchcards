@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Database } from "./path/to/your/Database"; // Adjust path as necessary
@@ -15,6 +16,7 @@ type EventDetail = {
 };
 
 const ViewEvent: React.FC = () => {
+  const { t } = useTranslation();
   const { eventId } = useParams<{ eventId: string }>(); // Extracting event ID from the URL
   const [event, setEvent] = useState<EventDetail | null>(null);
 
@@ -32,7 +34,7 @@ const ViewEvent: React.FC = () => {
     <div>
       <meta charSet="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>AIS Events - {event?.name || "Event Details"}</title>
+      <title>{t("ais_events_")}{event?.name || "Event Details"}</title>
       <link rel="icon" href="assets/logo.png" type="image/x-icon" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -42,12 +44,11 @@ const ViewEvent: React.FC = () => {
       />
       <nav>
         <Link to="/loggedOut">Logout</Link>
-        <Link to="/createEvent">Create Event</Link>
+        <Link to="/createEvent">{t("create_event")}</Link>
       </nav>
       <a className="imgLink" href="/">
         <img src="assets/logo.png" alt="Logo" />
       </a>
-
       {event ? (
         <div id="bodyContainer">
           <h2>{event.name}</h2>
@@ -55,7 +56,7 @@ const ViewEvent: React.FC = () => {
           <p>{event.date}</p>
           <p>{event.time}</p>
           <p>{event.description}</p>
-          <img src="assets/dummyQRcode.png" alt="Event QR Code" />
+          <img src="assets/dummyQRcode.png" alt={t("event_qr_code")} />
           <div className="eventActions">
             <Link to={`/deleteEvent/${event.id}`}>Delete</Link>{" "}
             {/* Implement these routes and functionalities */}
@@ -63,7 +64,7 @@ const ViewEvent: React.FC = () => {
           </div>
         </div>
       ) : (
-        <p>Loading event details...</p>
+        <p>{t("loading_event_details")}</p>
       )}
     </div>
   );

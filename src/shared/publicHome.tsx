@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useContext, useEffect, useState } from "react";
 import { EventList } from "../member/eventList";
 import { ClubEvent } from "../models/clubevent";
@@ -6,6 +7,7 @@ import { Timestamp } from "firebase/firestore";
 import { Compass, Link as LinkIcon, Users, GraduationCap, Heart } from "phosphor-react";
 
 export function PublicHome() {
+  const { t } = useTranslation();
   const fireContext = useContext(FirebaseContext);
   const [upcomingEvents, setUpcomingEvents] = useState<ClubEvent[] | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
@@ -86,23 +88,18 @@ export function PublicHome() {
               ×
             </button>
             <div className="modal-content">
-              <h2>Welcome to AIS Events</h2>
-              <p>
-                Welcome to the events page for the Association for Information Systems (AIS) club at BYU! 
-                Here you can view upcoming events and activities. Log in to check in to events and track your participation.
-              </p>
+              <h2>{t("welcome_to_ais_events")}</h2>
+              <p>{t("welcome_to_the_events_page_for_the_association_for")}</p>
             </div>
           </div>
         </div>
       )}
-
       <div className="public-home-header">
-        <h1>AIS Club Events</h1>
-        <p className="subtitle">Association for Information Systems - Brigham Young University</p>
+        <h1>{t("ais_club_events")}</h1>
+        <p className="subtitle">{t("association_for_information_systems__brigham_young")}</p>
       </div>
-
       <div id="categoryFilter">
-        <label>Filter by Category:</label>
+        <label>{t("filter_by_category")}</label>
         <div className="category-buttons">
           {categories.map((category) => (
             <button
@@ -117,13 +114,11 @@ export function PublicHome() {
           ))}
         </div>
       </div>
-
-      {!upcomingEvents && <h3>Loading Events...</h3>}
-      {upcomingEvents && <h2>Upcoming Events</h2>}
+      {!upcomingEvents && <h3>{t("loading_events")}</h3>}
+      {upcomingEvents && <h2>{t("upcoming_events")}</h2>}
       {filteredUpcomingEvents && <EventList events={filteredUpcomingEvents} />}
-      
       {filteredUpcomingEvents && filteredUpcomingEvents.length === 0 && upcomingEvents && upcomingEvents.length > 0 && (
-        <h3>No events in the selected category.</h3>
+        <h3>{t("no_events_in_the_selected_category")}</h3>
       )}
     </div>
   );
