@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { FirebaseContext } from "../shared/firebaseProvider";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -8,6 +9,7 @@ import { getAuth } from "firebase/auth";
 import { Calendar, Clock, MapPin, FileText, Users, User, Compass, Link as LinkIcon, GraduationCap, Heart } from "phosphor-react";
 
 export function EventCheckInPage() {
+  const { t } = useTranslation();
   const { eventId } = useParams();
   const fireContext = useContext(FirebaseContext);
   const db = useMemo(() => fireContext?.db, [fireContext]);
@@ -90,11 +92,9 @@ export function EventCheckInPage() {
   if (!eventId) {
     return (
       <div className="center-block">
-        <h2>Error: No event ID found</h2>
-        <p>Please return to the home page and try again.</p>
-        <Link to="/" className="ais-button background-ais">
-          Go to Home
-        </Link>
+        <h2>{t("error_no_event_id_found")}</h2>
+        <p>{t("please_return_to_the_home_page_and_try_again")}</p>
+        <Link to="/" className="ais-button background-ais">{t("go_to_home")}</Link>
       </div>
     );
   }
@@ -102,7 +102,7 @@ export function EventCheckInPage() {
   if (!curEvent) {
     return (
       <div className="center-block">
-        <h2>Loading event details...</h2>
+        <h2>{t("loading_event_details")}</h2>
       </div>
     );
   }
@@ -111,9 +111,9 @@ export function EventCheckInPage() {
     return (
       <div className="center-block">
         <div className="success-message">
-          <h2>✅ Successfully Checked In!</h2>
-          <p>Thank you for attending <strong>{curEvent.title}</strong></p>
-          <p>Redirecting you now...</p>
+          <h2>{t("_successfully_checked_in")}</h2>
+          <p>{t("thank_you_for_attending")}<strong>{curEvent.title}</strong></p>
+          <p>{t("redirecting_you_now")}</p>
         </div>
       </div>
     );
@@ -130,7 +130,6 @@ export function EventCheckInPage() {
           </span>
         </div>
       </div>
-
       {/* Event Photos */}
       {curEvent.photoUrls && curEvent.photoUrls.length > 0 && (
         <div className="event-photos-checkin">
@@ -152,12 +151,11 @@ export function EventCheckInPage() {
           </div>
         </div>
       )}
-
       <div className="event-details-checkin">
         <div className="detail-item">
           <span className="detail-icon"><Calendar size={20} /></span>
           <div>
-            <strong>Date & Time</strong>
+            <strong>{t("date__time")}</strong>
             <p>{eventDateTime}</p>
           </div>
         </div>
@@ -186,27 +184,26 @@ export function EventCheckInPage() {
           </div>
         </div>
       </div>
-
       <div className="checkin-section">
         {!fireContext?.isAuthenticated ? (
           <>
-            <h2>Sign In to Check In</h2>
-            <p>Please sign in with your Google account to check in to this event.</p>
+            <h2>{t("sign_in_to_check_in")}</h2>
+            <p>{t("please_sign_in_with_your_google_account_to_check_i")}</p>
             <button
               className="checkin-btn login-btn mx-auto"
               onClick={() => fireContext?.googleSignIn()}
             >
               <span className="btn-icon"><User size={24} /></span>
               <div>
-                <strong>Sign In with Google</strong>
-                <small>Required to check in to events</small>
+                <strong>{t("sign_in_with_google")}</strong>
+                <small>{t("required_to_check_in_to_events")}</small>
               </div>
             </button>
           </>
         ) : (
           <>
-            <h2>Complete Your Check-In</h2>
-            <p>Did you bring a plus one with you today?</p>
+            <h2>{t("complete_your_checkin")}</h2>
+            <p>{t("did_you_bring_a_plus_one_with_you_today")}</p>
 
             <div className="checkin-buttons">
               <button
@@ -216,7 +213,7 @@ export function EventCheckInPage() {
                 <span className="btn-icon"><Users size={24} /></span>
                 <div>
                   <strong>Yes</strong>
-                  <small>I brought someone with me</small>
+                  <small>{t("i_brought_someone_with_me")}</small>
                 </div>
               </button>
 
@@ -227,7 +224,7 @@ export function EventCheckInPage() {
                 <span className="btn-icon"><User size={24} /></span>
                 <div>
                   <strong>No</strong>
-                  <small>Just me today</small>
+                  <small>{t("just_me_today")}</small>
                 </div>
               </button>
             </div>

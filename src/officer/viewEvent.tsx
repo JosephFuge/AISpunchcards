@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useContext, useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import "../css/home.css";
@@ -7,6 +8,7 @@ import { FirebaseContext } from "../shared/firebaseProvider";
 import QRCode from "qrcode";
 
 export function ViewEvent() {
+  const { t } = useTranslation();
   const fireContext = useContext(FirebaseContext);
   const { eventId } = useParams<{ eventId: string }>(); // Extracting event ID from the URL
   const navigate = useNavigate();
@@ -64,7 +66,7 @@ export function ViewEvent() {
           {/* Event Photos */}
           {event.photoUrls && event.photoUrls.length > 0 && (
             <div className="event-photos">
-              <h3>Event Photos</h3>
+              <h3>{t("event_photos")}</h3>
               <div className="photo-gallery">
                 {event.photoUrls.map((photoUrl, index) => (
                   <img
@@ -79,31 +81,27 @@ export function ViewEvent() {
           )}
 
           <div className="event-details">
-            <p><strong>Location:</strong> {event.location}</p>
-            <p><strong>Date & Time:</strong> {eventDateTime}</p>
-            <p><strong>Duration:</strong> {event.eventDuration} hour{event.eventDuration !== 1 ? 's' : ''}</p>
-            <p><strong>Description:</strong> {event.description}</p>
-            {event.externalUrl && <p><strong>External Link:</strong> <a href={event.externalUrl} target="_blank" rel="noopener noreferrer">{event.externalUrl}</a></p>}
+            <p><strong>{t("location")}</strong> {event.location}</p>
+            <p><strong>{t("date__time")}</strong> {eventDateTime}</p>
+            <p><strong>{t("duration")}</strong> {event.eventDuration} hour{event.eventDuration !== 1 ? 's' : ''}</p>
+            <p><strong>{t("description")}</strong> {event.description}</p>
+            {event.externalUrl && <p><strong>{t("external_link")}</strong> <a href={event.externalUrl} target="_blank" rel="noopener noreferrer">{event.externalUrl}</a></p>}
           </div>
 
           <div className="qr-code-section">
-            <h3>QR Code for Check-In</h3>
-            {QRCodeData ? <img src={QRCodeData} alt="Event QR Code" className="qr-code-img" /> : <p>Loading QR Code...</p>}
+            <h3>{t("qr_code_for_checkin")}</h3>
+            {QRCodeData ? <img src={QRCodeData} alt={t("event_qr_code")} className="qr-code-img" /> : <p>{t("loading_qr_code")}</p>}
             {QRCodeData ? (
               <a className="link-button" href={QRCodeData} download={`AIS_${event.title}.png`}>
-                <span>Download QR Code</span>
+                <span>{t("download_qr_code")}</span>
               </a>
             ) : (
               <></>
             )}
 
             <div className="event-actions">
-              <Link to={`/event/${eventId}`} className="view-guest-button">
-                View as Guest
-              </Link>
-              <Link to={`/editEvent/${eventId}`} className="edit-button">
-                Edit Event
-              </Link>
+              <Link to={`/event/${eventId}`} className="view-guest-button">{t("view_as_guest")}</Link>
+              <Link to={`/editEvent/${eventId}`} className="edit-button">{t("edit_event")}</Link>
               <button
                 type="button"
                 className="edit-button"
@@ -122,9 +120,7 @@ export function ViewEvent() {
                     navigate(`/createEvent?${params.toString()}`);
                   }
                 }}
-              >
-                Duplicate Event
-              </button>
+              >{t("duplicate_event")}</button>
               <button
                 type="button"
                 className="danger-button"
@@ -146,9 +142,7 @@ export function ViewEvent() {
               >
                 {isDeleting ? (
                   <>
-                    <span className="spinner"></span>
-                    Deleting...
-                  </>
+                    <span className="spinner"></span>{t("deleting")}</>
                 ) : (
                   'Delete'
                 )}
@@ -157,9 +151,9 @@ export function ViewEvent() {
           </div>
         </div>
       ) : noEventExists == null ? (
-        <p>Loading event details...</p>
+        <p>{t("loading_event_details")}</p>
       ) : noEventExists ? (
-        <p>Could not find event. Please return to home page.</p>
+        <p>{t("could_not_find_event_please_return_to_home_page")}</p>
       ) : (
         <p></p>
       )}

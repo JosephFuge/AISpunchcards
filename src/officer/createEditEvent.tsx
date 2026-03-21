@@ -1,4 +1,5 @@
 // CreateEventForm.tsx
+import { useTranslation } from "react-i18next";
 import React, { useContext, useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Timestamp } from "firebase/firestore";
@@ -11,6 +12,7 @@ import "../css/form.css";
 import "../css/styles.css";
 
 export function CreateEvent() {
+  const { t } = useTranslation();
   const { eventId } = useParams<{ eventId: string }>();
   const [searchParams] = useSearchParams();
   const isEditing = Boolean(eventId);
@@ -265,7 +267,7 @@ export function CreateEvent() {
 
   return (
     <div>
-      <title>AIS Events - Create Event</title>
+      <title>{t("ais_events__create_event")}</title>
       <script type="module" src="/js/createeditevent.js"></script>
       {showTemplateSelector && !isEditing && !isDuplicating && (
         <TemplateSelector 
@@ -273,14 +275,13 @@ export function CreateEvent() {
           selectedTemplate={selectedTemplate}
         />
       )}
-
       <form onSubmit={handleSubmit}>
         <h2>{isEditing ? 'Edit Event' : (isDuplicating ? 'Duplicate Event' : 'Create Event')}</h2>
         <div id="titleUnderline"></div>
 
         {!showTemplateSelector && !isEditing && !isDuplicating && selectedTemplate && (
           <div className="selected-template-info">
-            <p>Using template: <strong>{selectedTemplate.name}</strong></p>
+            <p>{t("using_template")}<strong>{selectedTemplate.name}</strong></p>
             <button 
               type="button" 
               className="btn btn-outline-secondary btn-sm"
@@ -300,12 +301,10 @@ export function CreateEvent() {
                   eventDuration: "",
                 });
               }}
-            >
-              Change Template
-            </button>
+            >{t("change_template")}</button>
           </div>
         )}
-        <label htmlFor="title">Event Title</label>
+        <label htmlFor="title">{t("event_title")}</label>
         <input
           type="text"
           id="title"
@@ -315,7 +314,7 @@ export function CreateEvent() {
           required
         />
 
-        <p>Event Category</p>
+        <p>{t("event_category")}</p>
         <div className="radioSelector">
           <input
             type="radio"
@@ -384,7 +383,7 @@ export function CreateEvent() {
           </label>
         </div>
 
-        <label htmlFor="eventDate">Event Date</label>
+        <label htmlFor="eventDate">{t("event_date")}</label>
         <input
           type="date"
           id="eventDate"
@@ -393,7 +392,7 @@ export function CreateEvent() {
           onChange={handleChange}
           required
         />
-        <label htmlFor="eventTime">Event Time</label>
+        <label htmlFor="eventTime">{t("event_time")}</label>
         <input
           type="time"
           id="eventTime"
@@ -402,7 +401,7 @@ export function CreateEvent() {
           onChange={handleChange}
           required
         />
-        <label htmlFor="eventDuration">Event Duration (in hours)</label>
+        <label htmlFor="eventDuration">{t("event_duration_in_hours")}</label>
         <input
           type="number"
           id="eventDuration"
@@ -410,27 +409,27 @@ export function CreateEvent() {
           value={formData.eventDuration}
           min="0"
           step="0.1"
-          placeholder="0.5, 1, 2, etc."
+          placeholder={t("05_1_2_etc")}
           onChange={handleChange}
           required
         ></input>
-        <label htmlFor="location">Event Location</label>
+        <label htmlFor="location">{t("event_location")}</label>
         <input
           type="text"
           id="location"
           name="location"
           value={formData.location}
           onChange={handleChange}
-          placeholder="Room number, building, etc."
+          placeholder={t("room_number_building_etc")}
           required
         />
-        <label htmlFor="description">Event Description</label>
+        <label htmlFor="description">{t("event_description")}</label>
         <textarea
           id="description"
           name="description"
           value={formData.description}
           onChange={handleChange}
-          placeholder="Who the event is for, length of event, etc."
+          placeholder={t("who_the_event_is_for_length_of_event_etc")}
           required
         ></textarea>
         <input
@@ -439,10 +438,10 @@ export function CreateEvent() {
           name="handshakeUrl"
           value={formData.handshakeUrl}
           onChange={handleChange}
-          placeholder="Handshake URL (optional)"
+          placeholder={t("handshake_url_optional")}
         />
 
-        <label htmlFor="eventPhotos">Event Photos (optional)</label>
+        <label htmlFor="eventPhotos">{t("event_photos_optional")}</label>
         <input
           type="file"
           id="eventPhotos"
@@ -455,7 +454,7 @@ export function CreateEvent() {
 
         {selectedFiles.length > 0 && (
           <div className="selected-files">
-            <p>Selected photos:</p>
+            <p>{t("selected_photos")}</p>
             <div className="image-previews">
               {selectedFiles.map((file, index) => (
                 <div key={index} className="image-preview-item">
