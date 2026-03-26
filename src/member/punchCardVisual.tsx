@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
 import {
   Compass,
@@ -13,6 +14,7 @@ interface Attendance {
 }
 
 const PunchCard: React.FC = () => {
+  const { t } = useTranslation();
   const [attendance, setAttendance] = useState<Attendance[]>([]);
 
   useEffect(() => {
@@ -33,7 +35,7 @@ const PunchCard: React.FC = () => {
 
   return (
     <div className="p-6 bg-white rounded-2xl shadow-lg w-fit mx-auto">
-      <h2 className="text-xl font-bold mb-4 text-center">Punch Card</h2>
+      <h2 className="text-xl font-bold mb-4 text-center">{t("punch_card")}</h2>
       <div className="grid grid-cols-5 gap-6">
         {activities.map((activity) => {
           const attended = attendance.some(
