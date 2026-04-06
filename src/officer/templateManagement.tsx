@@ -1,9 +1,11 @@
+import { useTranslation } from "react-i18next";
 import React, { useContext, useEffect, useState } from "react";
 import { EventTemplate } from "../models/eventTemplate";
 import { FirebaseContext } from "../shared/firebaseProvider";
 import { Compass, Link as LinkIcon, Users, GraduationCap, Heart, Plus, Pencil, Trash } from "phosphor-react";
 
 export function TemplateManagement() {
+  const { t } = useTranslation();
   const [templates, setTemplates] = useState<EventTemplate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editingTemplate, setEditingTemplate] = useState<EventTemplate | null>(null);
@@ -153,7 +155,7 @@ export function TemplateManagement() {
   if (isLoading) {
     return (
       <div className="template-management">
-        <h2>Loading Templates...</h2>
+        <h2>{t("loading_templates")}</h2>
       </div>
     );
   }
@@ -161,24 +163,21 @@ export function TemplateManagement() {
   return (
     <div className="template-management">
       <div className="template-header">
-        <h2>Event Templates</h2>
+        <h2>{t("event_templates")}</h2>
         <button 
           className="btn btn-primary"
           onClick={startCreating}
           disabled={isCreating || editingTemplate}
         >
-          <Plus size={20} />
-          Create Template
-        </button>
+          <Plus size={20} />{t("create_template")}</button>
       </div>
-
       {(isCreating || editingTemplate) && (
         <div className="template-form-container">
           <form onSubmit={handleSubmit} className="template-form">
             <h3>{editingTemplate ? 'Edit Template' : 'Create New Template'}</h3>
             
             <div className="form-group">
-              <label htmlFor="name">Template Name *</label>
+              <label htmlFor="name">{t("template_name_")}</label>
               <input
                 type="text"
                 id="name"
@@ -186,19 +185,19 @@ export function TemplateManagement() {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                placeholder="e.g., Monthly Speaker Series"
+                placeholder={t("eg_monthly_speaker_series")}
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="title">Event Title</label>
+              <label htmlFor="title">{t("event_title")}</label>
               <input
                 type="text"
                 id="title"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                placeholder="Leave empty if varies per event"
+                placeholder={t("leave_empty_if_varies_per_event")}
               />
             </div>
 
@@ -210,7 +209,7 @@ export function TemplateManagement() {
                 value={formData.category}
                 onChange={handleChange}
               >
-                <option value="">Select category...</option>
+                <option value="">{t("select_category")}</option>
                 <option value="Discover">Discover</option>
                 <option value="Connect">Connect</option>
                 <option value="Socialize">Socialize</option>
@@ -227,12 +226,12 @@ export function TemplateManagement() {
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
-                placeholder="e.g., Tanner Building 1040"
+                placeholder={t("eg_tanner_building_1040")}
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="eventDuration">Duration (hours)</label>
+              <label htmlFor="eventDuration">{t("duration_hours")}</label>
               <input
                 type="number"
                 id="eventDuration"
@@ -241,7 +240,7 @@ export function TemplateManagement() {
                 onChange={handleChange}
                 min="0.5"
                 step="0.5"
-                placeholder="e.g., 1.5"
+                placeholder={t("eg_15")}
               />
             </div>
 
@@ -253,12 +252,12 @@ export function TemplateManagement() {
                 value={formData.description}
                 onChange={handleChange}
                 rows={4}
-                placeholder="Template description or common event description"
+                placeholder={t("template_description_or_common_event_description")}
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="externalUrl">External URL</label>
+              <label htmlFor="externalUrl">{t("external_url")}</label>
               <input
                 type="url"
                 id="externalUrl"
@@ -270,7 +269,7 @@ export function TemplateManagement() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="imgUrl">Image URL</label>
+              <label htmlFor="imgUrl">{t("image_url")}</label>
               <input
                 type="url"
                 id="imgUrl"
@@ -292,49 +291,54 @@ export function TemplateManagement() {
           </form>
         </div>
       )}
-
       <div className="templates-list">
         {templates.length === 0 ? (
-          <p className="no-templates">No templates created yet.</p>
+          <p className="no-templates">{t("no_templates_created_yet")}</p>
         ) : (
-          templates.map(template => (
-            <div key={template.id} className="template-card">
-              <div className="template-card-header">
-                <div className="template-info">
-                  {template.category && getCategoryIcon(template.category)}
-                  <h4>{template.name}</h4>
+          templates.map(template => {
+            const {
+              t
+            } = useTranslation();
+
+            return (
+              <div key={template.id} className="template-card">
+                <div className="template-card-header">
+                  <div className="template-info">
+                    {template.category && getCategoryIcon(template.category)}
+                    <h4>{template.name}</h4>
+                  </div>
+                  <div className="template-actions">
+                    <button
+                      className="btn btn-outline-primary btn-sm"
+                      onClick={() => startEditing(template)}
+                      disabled={isCreating || editingTemplate}
+                    >
+                      <Pencil size={16} />
+                    </button>
+                    <button
+                      className="btn btn-outline-danger btn-sm"
+                      onClick={() => handleDelete(template)}
+                      disabled={isCreating || editingTemplate}
+                    >
+                      <Trash size={16} />
+                    </button>
+                  </div>
                 </div>
-                <div className="template-actions">
-                  <button
-                    className="btn btn-outline-primary btn-sm"
-                    onClick={() => startEditing(template)}
-                    disabled={isCreating || editingTemplate}
-                  >
-                    <Pencil size={16} />
-                  </button>
-                  <button
-                    className="btn btn-outline-danger btn-sm"
-                    onClick={() => handleDelete(template)}
-                    disabled={isCreating || editingTemplate}
-                  >
-                    <Trash size={16} />
-                  </button>
+                <div className="template-card-content">
+                  {template.title && <p><strong>{t("title")}</strong> {template.title}</p>}
+                  {template.category && <p><strong>{t("category")}</strong> {template.category}</p>}
+                  {template.location && <p><strong>{t("location")}</strong> {template.location}</p>}
+                  {template.eventDuration && <p><strong>{t("duration")}</strong> {template.eventDuration} hours</p>}
+                  {template.description && (
+                    <p><strong>{t("description")}</strong> {template.description.length > 150 
+                      ? `${template.description.substring(0, 150)}...` 
+                      : template.description}
+                    </p>
+                  )}
                 </div>
               </div>
-              <div className="template-card-content">
-                {template.title && <p><strong>Title:</strong> {template.title}</p>}
-                {template.category && <p><strong>Category:</strong> {template.category}</p>}
-                {template.location && <p><strong>Location:</strong> {template.location}</p>}
-                {template.eventDuration && <p><strong>Duration:</strong> {template.eventDuration} hours</p>}
-                {template.description && (
-                  <p><strong>Description:</strong> {template.description.length > 150 
-                    ? `${template.description.substring(0, 150)}...` 
-                    : template.description}
-                  </p>
-                )}
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>

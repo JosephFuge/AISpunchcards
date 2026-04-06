@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { Link } from "react-router-dom";
 import { ClubEvent } from "./js/models/clubevent";
@@ -5,11 +6,12 @@ import "./css/styles.css";
 import "./css/home.css";
 
 const UserHome = () => {
+  const { t } = useTranslation();
   return (
     <div>
       <meta charSet="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>AIS Events - Home</title>
+      <title>{t("ais_events__home")}</title>
       <link rel="icon" href="assets/logo.png" type="image/x-icon" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link
@@ -26,7 +28,7 @@ const UserHome = () => {
           <img
             className="filter-white"
             src="/assets/user-circle-thin.svg"
-            alt="User Profile"
+            alt={t("user_profile")}
           />
         </button>
         <Link to="/loggedOut" className="signOutBtn">
@@ -36,10 +38,9 @@ const UserHome = () => {
       <Link className="imgLink" to="/">
         <img src="assets/logo.png" alt="Logo" />
       </Link>
-
       <div id="bodyContainer">
         <div className="eventListContainer">
-          <h2>Events Attended</h2>
+          <h2>{t("events_attended")}</h2>
           {ClubEvent.map((event) => (
             <div key={event.id} className="eventCard">
               <div className="eventInfo">
@@ -53,7 +54,7 @@ const UserHome = () => {
         </div>
 
         <div className="eventListContainer">
-          <h2>Upcoming Events</h2>
+          <h2>{t("upcoming_events")}</h2>
           {ClubEvent.map((event) => (
             <div key={event.id} className="eventCard">
               <div className="eventInfo">

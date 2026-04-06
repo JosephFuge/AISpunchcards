@@ -1,4 +1,5 @@
 // Assuming you have a file structure where the Database class and ClubEvent model are properly set up
+import { useTranslation } from "react-i18next";
 import React, { useState } from "react";
 import { Database } from "./path/to/your/Database"; // Adjust import paths as necessary
 import { ClubEvent } from "./path/to/your/models/ClubEvent";
@@ -7,6 +8,7 @@ import "./css/styles.css";
 import "./css/forms.css";
 
 const CreateEvent: React.FC = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     eventTitle: "",
     eventDate: "",
@@ -53,7 +55,7 @@ const CreateEvent: React.FC = () => {
     <div>
       <meta charSet="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>AIS Events - Create Event</title>
+      <title>{t("ais_events__create_event")}</title>
       <link rel="icon" href="assets/logo.png" type="image/x-icon" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link
@@ -66,10 +68,10 @@ const CreateEvent: React.FC = () => {
         rel="stylesheet"
       />
       <form onSubmit={handleSubmit}>
-        <h2>Create Event</h2>
+        <h2>{t("create_event")}</h2>
         <div id="titleUnderline"></div>
 
-        <label htmlFor="eventTitle">Event Title</label>
+        <label htmlFor="eventTitle">{t("event_title")}</label>
         <input
           type="text"
           id="eventTitle"
@@ -79,7 +81,7 @@ const CreateEvent: React.FC = () => {
           required
         />
 
-        <p>Event Category</p>
+        <p>{t("event_category")}</p>
         <div className="radioSelector">
           <input
             type="radio"
@@ -123,7 +125,7 @@ const CreateEvent: React.FC = () => {
           <label htmlFor="serveCategory">Serve</label>
         </div>
 
-        <label htmlFor="eventDate">Event Date</label>
+        <label htmlFor="eventDate">{t("event_date")}</label>
         <input
           type="date"
           id="eventDate"
@@ -133,7 +135,7 @@ const CreateEvent: React.FC = () => {
           required
         />
 
-        <label htmlFor="eventTime">Event Time</label>
+        <label htmlFor="eventTime">{t("event_time")}</label>
         <input
           type="time"
           id="eventTime"
@@ -143,28 +145,28 @@ const CreateEvent: React.FC = () => {
           required
         />
 
-        <label htmlFor="eventLocation">Event Location</label>
+        <label htmlFor="eventLocation">{t("event_location")}</label>
         <input
           type="text"
           id="eventLocation"
           name="eventLocation"
           value={formData.eventLocation}
           onChange={handleChange}
-          placeholder="Room number, building, etc."
+          placeholder={t("room_number_building_etc")}
           required
         />
 
-        <label htmlFor="eventDescription">Event Description</label>
+        <label htmlFor="eventDescription">{t("event_description")}</label>
         <textarea
           id="eventDescription"
           name="eventDescription"
           value={formData.eventDescription}
           onChange={handleChange}
-          placeholder="Who the event is for, length of event, etc."
+          placeholder={t("who_the_event_is_for_length_of_event_etc")}
           required
         ></textarea>
 
-        <button type="submit">Create Event</button>
+        <button type="submit">{t("create_event")}</button>
       </form>
     </div>
   );
