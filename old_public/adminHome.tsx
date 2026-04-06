@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import React from "react";
 import { ClubEvent } from "./models/clubevents.js";
 // import { Helmet } from "react-helmet";
@@ -6,11 +7,12 @@ import "./css/styles.css";
 import "./css/home.css";
 
 const AdminHome = () => {
+  const { t } = useTranslation();
   return (
     <div>
       <meta charSet="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>AIS Events - Admin Home</title>
+      <title>{t("ais_events__admin_home")}</title>
       <link rel="icon" href="assets/logo.png" type="image/x-icon" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" />
@@ -20,14 +22,14 @@ const AdminHome = () => {
       />
       <nav>
         <Link to="/loggedOut">Logout</Link>
-        <Link to="/createEvent">Create Event</Link>
+        <Link to="/createEvent">{t("create_event")}</Link>
       </nav>
       <a className="imgLink" href="">
         <img src="assets/logo.png" alt="Logo" />
       </a>
       <div id="bodyContainer">
         <div className="eventListContainer">
-          <h2>Upcoming Events</h2>gtrrr
+          <h2>{t("upcoming_events")}</h2>gtrrr
           {ClubEvent.map((event) => (
             <div key={event.id} className="eventCard">
               <div className="eventInfo">

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useContext, useEffect, useState } from "react";
 import { EventList } from "./eventList";
 import { ClubEvent } from "../models/clubevent";
@@ -6,6 +7,7 @@ import { Timestamp } from "firebase/firestore";
 import { Compass, Link as LinkIcon, Users, GraduationCap, Heart } from "phosphor-react";
 
 export function UserHome() {
+  const { t } = useTranslation();
   const fireContext = useContext(FirebaseContext);
   const [upcomingEvents, setUpcomingEvents] = useState<ClubEvent[] | null>(null);
   const [attendedEvents, setAttendedEvents] = useState<ClubEvent[] | null>(null);
@@ -95,9 +97,8 @@ export function UserHome() {
           {fireContext != null && fireContext.user && fireContext.user.isOfficer ? <p className="no-margin">Past</p> : <p className="no-margin">Attended</p>}
         </button>
       </div>
-
       <div id="categoryFilter">
-        <label>Filter by Category:</label>
+        <label>{t("filter_by_category")}</label>
         <div className="category-buttons">
           {categories.map((category) => (
             <button
@@ -112,11 +113,11 @@ export function UserHome() {
           ))}
         </div>
       </div>
-      {showUpcomingEvents && !upcomingEvents && <h3>Loading Events...</h3>}
-      {showUpcomingEvents && upcomingEvents && <h2>Upcoming Events</h2>}
-      {!showUpcomingEvents && !attendedEvents && <h3>Loading Events...</h3>}
-      {!showUpcomingEvents && attendedEvents && !fireContext?.user?.isOfficer && <h2>Events Attended</h2>}
-      {!showUpcomingEvents && attendedEvents && fireContext?.user?.isOfficer && <h2>Past Events</h2>}
+      {showUpcomingEvents && !upcomingEvents && <h3>{t("loading_events")}</h3>}
+      {showUpcomingEvents && upcomingEvents && <h2>{t("upcoming_events")}</h2>}
+      {!showUpcomingEvents && !attendedEvents && <h3>{t("loading_events")}</h3>}
+      {!showUpcomingEvents && attendedEvents && !fireContext?.user?.isOfficer && <h2>{t("events_attended")}</h2>}
+      {!showUpcomingEvents && attendedEvents && fireContext?.user?.isOfficer && <h2>{t("past_events")}</h2>}
       {/* Show upcoming events or past events depending on toggle */}
       {showUpcomingEvents && filteredUpcomingEvents && <EventList events={filteredUpcomingEvents} />}
       {/* <div id="attendedProgress">
