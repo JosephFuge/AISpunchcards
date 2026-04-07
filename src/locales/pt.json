@@ -1,5 +1,7 @@
 {
   "page_not_found": "Página não encontrada",
+  "login": "Entrar",
+  "sign_out": "Sair",
   "the_specified_file_was_not_found_on_this_website_p": "O arquivo especificado não foi encontrado neste site. Verifique se há erros no URL e\ntente novamente.",
   "why_am_i_seeing_this": "Por que estou vendo isso?",
   "this_page_was_generated_by_the_firebase_commandlin": "Esta página foi gerada pela Interface de Linha de Comando do Firebase. Para modificá-la, edite o arquivo.",
