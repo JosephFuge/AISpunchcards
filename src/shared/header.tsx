@@ -6,6 +6,7 @@ import { FirebaseContext } from "./firebaseProvider";
 import { NavLink } from "react-router-dom";
 
 export function Header() {
+  const { t } = useTranslation();
   const { t, i18n } = useTranslation();
   const fireContext = useContext(FirebaseContext);
 
@@ -46,7 +47,7 @@ export function Header() {
         <div className="language-switcher">
           <select value={i18n.language} onChange={changeLanguage} className="language-select">
             <option value="en">English</option>
-            <option value="pt">Português</option>
+            <option value="pt">{t("portugus")}</option>
             <option value="ja">日本語</option>
           </select>
         </div>
