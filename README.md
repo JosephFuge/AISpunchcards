@@ -47,3 +47,6 @@ Once you have been added as an editor on the Firebase project,
 - [x] ~Add icons for event categories to help identify them visually~
 - [x] ~Enable editing of events~
 - [x] ~Enable creating a duplicate of events~
+
+
+<!-- LocoLingua test connection -->
